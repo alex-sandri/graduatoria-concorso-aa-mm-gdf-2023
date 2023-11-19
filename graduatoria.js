@@ -45,12 +45,24 @@ const calcolaGraduatoria = ({ incrementaleMio, incrementaleAltri } = {}) => {
     .sort(([, a], [, b]) => b - a));
 }
 
+const ottieniPosizione = (graduatoria, id) =>
+  // Non esiste la posizione '0'.
+  Object.entries(graduatoria).findIndex(candidato => candidato[0] === id) + 1;
+
 const stampaGraduatoria = (graduatoria, etichetta) => {
+  const mioPunteggio = graduatoria[mioId];
+
+  const intervalloStessoPunteggio = Object.entries(graduatoria)
+    .filter(([, punteggio]) => punteggio === mioPunteggio)
+    .map(([id]) => ottieniPosizione(graduatoria, id));
+
+  log(etichetta, 'punteggio: %f', mioPunteggio);
+
   log(
     etichetta,
-    'punteggio: %f - posizione: %i',
-    graduatoria[mioId],
-    Object.entries(graduatoria).findIndex(([id]) => id === mioId),
+    'posizione: tra %i e %i',
+    intervalloStessoPunteggio[0],
+    intervalloStessoPunteggio.at(-1),
   );
 }
 
