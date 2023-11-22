@@ -3,7 +3,15 @@ import fs from 'fs/promises';
 import preselezione from './preselezione.json' assert { type: 'json' };
 import culturaGenerale from './cultura_generale.json' assert { type: 'json' };
 
-const mioId = '2023AAMM3856V1';
+const me = {
+  id: '2023AAMM3856V1',
+  punteggi: {
+    fisiche: 0.2,
+    orale: 10,
+    lingua: 0, // TODO
+    totale: function () { return this.fisiche + this.orale + this.lingua; }
+  },
+};
 
 const log = (etichetta, contenuto, ...parametri) =>
   console.info(`[${etichetta}] ${contenuto}`, ...parametri);
@@ -35,7 +43,7 @@ const calcolaGraduatoria = ({ incrementaleMio, incrementaleAltri } = {}) => {
       .find(esito => esito[0] === id);
 
     let punteggio = punteggioPreselezione + punteggioCulturaGenerale;
-    punteggio += id === mioId ? incrementaleMio : incrementaleAltri;
+    punteggio += id === me.id ? incrementaleMio : incrementaleAltri;
 
     graduatoria[id] = punteggio;
   }
@@ -50,7 +58,7 @@ const ottieniPosizione = (graduatoria, id) =>
   Object.entries(graduatoria).findIndex(candidato => candidato[0] === id) + 1;
 
 const stampaGraduatoria = (graduatoria, etichetta) => {
-  const mioPunteggio = graduatoria[mioId];
+  const mioPunteggio = graduatoria[me.id];
 
   const intervalloStessoPunteggio = Object.entries(graduatoria)
     .filter(([, punteggio]) => punteggio === mioPunteggio)
@@ -93,20 +101,10 @@ const stampaGraduatoria = (graduatoria, etichetta) => {
 
 {
   const graduatoria = calcolaGraduatoria({
-    incrementaleMio: 10.2, // minimio 10 orale più 0.2 alle fisiche.
-    incrementaleAltri: 10.4, // minimio 10 orale più massimo alle fisiche (0.4).
+    incrementaleMio: me.punteggi.totale(),
+    incrementaleAltri: 0.4 + 10 + 0.1, // massimo fisiche + orale + lingua.
   });
 
   logLine();
-  stampaGraduatoria(graduatoria, 'caso-peggiore-post-orale');
-}
-
-{
-  const graduatoria = calcolaGraduatoria({
-    incrementaleMio: 10.3, // incrementale all'orale più minimo lingua (0.1).
-    incrementaleAltri: 11.9, // incrementale all'orale più massimo lingua (1.5).
-  });
-
-  logLine();
-  stampaGraduatoria(graduatoria, 'caso-peggiore-post-lingua');
+  stampaGraduatoria(graduatoria, 'caso-peggiore');
 }
