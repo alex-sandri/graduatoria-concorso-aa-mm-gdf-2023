@@ -17,6 +17,6 @@ Script per il calcolo della graduatoria parziale del concorso "AA.MM. GdF 2023".
 [attuale] punteggio: 18.95
 [attuale] posizione: tra 153 e 157
 
-[caso-peggiore] punteggio: 29.15
-[caso-peggiore] posizione: tra 234 e 257
+[probabile] punteggio: 30.15
+[probabile] posizione: tra 61 e 66
 ```

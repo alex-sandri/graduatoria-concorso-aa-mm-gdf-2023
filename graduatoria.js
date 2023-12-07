@@ -8,7 +8,7 @@ const me = {
   punteggi: {
     fisiche: 0.2,
     orale: 10,
-    lingua: 0, // TODO
+    lingua: 1,
     totale: function () { return this.fisiche + this.orale + this.lingua; }
   },
 };
@@ -90,10 +90,6 @@ const stampaGraduatoria = (graduatoria, etichetta) => {
   );
 
   log('info', 'graduatoria salvata in \'graduatoria.json\'');
-}
-
-{
-  const graduatoria = calcolaGraduatoria();
 
   logLine();
   stampaGraduatoria(graduatoria, 'attuale');
@@ -106,5 +102,5 @@ const stampaGraduatoria = (graduatoria, etichetta) => {
   });
 
   logLine();
-  stampaGraduatoria(graduatoria, 'caso-peggiore');
+  stampaGraduatoria(graduatoria, 'probabile');
 }
