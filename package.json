@@ -4,10 +4,10 @@
   "description": "",
   "main": "graduatoria.js",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": {
+    "name": "Alex Sandri",
+    "email": "me@alexsandri.com",
+    "url": "https://alexsandri.com"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "UNLICENSED"
 }

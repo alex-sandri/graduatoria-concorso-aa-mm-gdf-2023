@@ -3,20 +3,19 @@
 Script per il calcolo della graduatoria parziale del concorso "AA.MM. GdF 2023".
 
 > [!NOTE]
-> I punteggi mostrati sono relativi all'identificativo **2023AAMM3856V1**.\
-> I dati sono stati estratti dagli esiti pubblici delle prove di preselezione e
-> di cultura generale.
+> I dati sono stati estratti dagli esiti pubblici delle prove di preselezione,
+> di cultura generale e dalla graduatoria finale di merito.
+
+> [!WARNING]
+> La graduatoria finale contiene i dati del solo *Contingente Ordinario* e
+> pertanto alcuni elementi presentano il valore *N/A* nel campo
+> `incrementoPostCulturaGenerale` della graduatoria parziale.
 
 ```
 [info] importati 4559 elementi da 'preselezione.json'
 [info] importati 2637 elementi da 'cultura_generale.json'
+[info] importati 1232 elementi da 'graduatoria_finale.json'
 
-[info] la graduatoria ha 2637 elementi
-[info] graduatoria salvata in 'graduatoria.json'
-
-[attuale] punteggio: 18.95
-[attuale] posizione: tra 153 e 157
-
-[probabile] punteggio: 30.15
-[probabile] posizione: tra 61 e 66
+[info] la graduatoria parziale ha 2637 elementi
+[info] graduatoria parziale salvata in 'graduatoria_parziale.json'
 ```

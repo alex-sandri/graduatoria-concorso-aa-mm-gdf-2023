@@ -2,16 +2,9 @@ import fs from 'fs/promises';
 
 import preselezione from './preselezione.json' assert { type: 'json' };
 import culturaGenerale from './cultura_generale.json' assert { type: 'json' };
+import graduatoriaFinale from './graduatoria_finale.json' assert { type: 'json' };
 
-const me = {
-  id: '2023AAMM3856V1',
-  punteggi: {
-    fisiche: 0.2,
-    orale: 10,
-    lingua: 1,
-    totale: function () { return this.fisiche + this.orale + this.lingua; }
-  },
-};
+const config = { out: 'graduatoria_parziale.json' };
 
 const log = (etichetta, contenuto, ...parametri) =>
   console.info(`[${etichetta}] ${contenuto}`, ...parametri);
@@ -30,77 +23,55 @@ log(
   culturaGenerale.length,
 );
 
+log(
+  'info',
+  'importati %i elementi da \'graduatoria_finale.json\'',
+  graduatoriaFinale.length,
+);
+
 logLine();
 
-const calcolaGraduatoria = ({ incrementaleMio, incrementaleAltri } = {}) => {
+const calcolaGraduatoriaParziale = () => {
   const graduatoria = {};
-
-  incrementaleMio ??= 0;
-  incrementaleAltri ??= 0;
 
   for (const [id, punteggioCulturaGenerale] of culturaGenerale) {
     const [, punteggioPreselezione] = preselezione
       .find(esito => esito[0] === id);
 
-    let punteggio = punteggioPreselezione + punteggioCulturaGenerale;
-    punteggio += id === me.id ? incrementaleMio : incrementaleAltri;
+    const elementoGraduatoriaFinale = graduatoriaFinale
+      .find(esito => esito[0] === id);
 
-    graduatoria[id] = punteggio;
+    const punteggio = punteggioPreselezione + punteggioCulturaGenerale;
+
+    let incrementoPostCulturaGenerale = 'N/A';
+
+    if (elementoGraduatoriaFinale !== undefined) {
+      incrementoPostCulturaGenerale = elementoGraduatoriaFinale[1] - punteggio;
+
+      // Show just two decimal places, this should at least hide float precision issues
+      incrementoPostCulturaGenerale = parseFloat(incrementoPostCulturaGenerale.toFixed(2));
+    }
+
+    graduatoria[id] = { punteggio, incrementoPostCulturaGenerale };
   }
 
   return Object
     .fromEntries(Object.entries(graduatoria)
-    .sort(([, a], [, b]) => b - a));
+    .sort(([, a], [, b]) => b.punteggio - a.punteggio));
 }
 
-const ottieniPosizione = (graduatoria, id) =>
-  // Non esiste la posizione '0'.
-  Object.entries(graduatoria).findIndex(candidato => candidato[0] === id) + 1;
+const graduatoria = calcolaGraduatoriaParziale();
 
-const stampaGraduatoria = (graduatoria, etichetta) => {
-  const mioPunteggio = graduatoria[me.id];
+log(
+  'info',
+  'la graduatoria parziale ha %i elementi',
+  Object.entries(graduatoria).length,
+);
 
-  const intervalloStessoPunteggio = Object.entries(graduatoria)
-    .filter(([, punteggio]) => punteggio === mioPunteggio)
-    .map(([id]) => ottieniPosizione(graduatoria, id));
+await fs.writeFile(
+  `./${config.out}`,
+  JSON.stringify(graduatoria, undefined, 4),
+  'utf-8',
+);
 
-  log(etichetta, 'punteggio: %f', mioPunteggio);
-
-  log(
-    etichetta,
-    'posizione: tra %i e %i',
-    intervalloStessoPunteggio[0],
-    intervalloStessoPunteggio.at(-1),
-  );
-}
-
-{
-  const graduatoria = calcolaGraduatoria();
-
-  log(
-    'info',
-    'la graduatoria ha %i elementi',
-    Object.entries(graduatoria).length,
-  );
-
-  await fs.writeFile(
-    './graduatoria.json',
-    JSON.stringify(graduatoria, undefined, 4),
-    'utf-8',
-  );
-
-  log('info', 'graduatoria salvata in \'graduatoria.json\'');
-
-  logLine();
-  stampaGraduatoria(graduatoria, 'attuale');
-}
-
-{
-  const graduatoria = calcolaGraduatoria({
-    incrementaleMio: me.punteggi.totale(),
-    incrementaleAltri: 0.4 + 10 + 0.1, // massimo fisiche + orale + lingua.
-  });
-
-  logLine();
-  stampaGraduatoria(graduatoria, 'probabile');
-}
+log('info', `graduatoria parziale salvata in '${config.out}'`);
